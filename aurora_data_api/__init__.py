@@ -170,15 +170,7 @@ class AuroraDataAPICursor:
                                       includeResultMetadata=True)
         if parameters:
             execute_statement_args["parameters"] = self._format_parameter_set(parameters)
-        try:
-            res = self._client.execute_statement(**execute_statement_args)
-            self._set_description(res["columnMetadata"])
-            self._current_response = self._render_response(res)
-        except self._client.exceptions.BadRequestException as e:
-            if "Please paginate your query" in str(e):
-                self._start_paginated_query(execute_statement_args)
-            else:
-                raise
+        self._start_paginated_query(execute_statement_args, 1)
         self._iterator = iter(self)
 
     def executemany(self, operation, seq_of_parameters):
